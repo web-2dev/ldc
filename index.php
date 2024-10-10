@@ -1,36 +1,35 @@
 <?php 
+include "tools/init.inc.php";
 
-function vd($var) {
-    echo "<pre>"; exit(var_dump($var));
-}
+$user = substr($_SERVER["REQUEST_URI"], 1);
 
 
-$fileNameList = "list.json";
+$fileNameList = "$user.json";
+if ( !file_exists("data/$fileNameList") ) $fileNameList = "list.json";
 ob_start();
-    include $fileNameList;
+    include "data/$fileNameList";
     $list = ob_get_contents();
 ob_end_clean();
 $list = (array)json_decode($list);
 
 switch ($_SERVER["REQUEST_METHOD"]) {
     case 'GET':
-        include "views/tableList.html.php";
+        $listName = "Liste $user";
+        displayHTML("tableList", compact("list", "listName"));
         exit;
         break;
     
     case 'POST':
-        // vd($_POST);
         if( isset($_POST["btDel"]) && !empty($_POST["delete"]) ) {
             unset($_POST["btDel"]);
-            $toDelete = is_array($_POST["delete"]) ? $_POST["delete"] : [$_POST["delete"]];
             foreach ($_POST["delete"] as $index => $item) {
                 unset($list[$item]);
             }
             unset($_POST["delete"]);
         }
-
         foreach ($list as $item => $checked) {
-            if( in_array($item, array_keys($_POST)) ) {
+            // ! dans $_POS, les espaces des clés sont remplacés par des _
+            if( in_array(str_replace(" ", "_", $item), array_keys($_POST)) ) {
                 $list[$item] = true;
                 unset($_POST[$item]);
             } else {
@@ -38,11 +37,17 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             }    
         }
 
+        if( !empty($_POST["add"]) ) {
+            foreach ($_POST["add"] as $key => $item) {
+                if( in_array($item, array_keys($list)) || !$item) continue;
+                $list[$item] = false;
+            }
+        }
 
-        $file = fopen($fileNameList, "w");
-        fwrite($file, json_encode($list) );
+        $file = fopen("data/$fileNameList", "w");
+        fwrite($file, json_encode($list, JSON_UNESCAPED_UNICODE) );
         fclose($file);
-        header("Location: /"); exit;
+        header("Location: /$user"); exit;
         break;
     
     default:
