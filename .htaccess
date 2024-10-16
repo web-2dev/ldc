@@ -1,7 +1,7 @@
-AuthName "Attention pauvre fou ! Qui s'aventure en territoire interdit ?"
-AuthType Basic
-AuthUserFile "C:\Users\web-2\Documents\DEV\projets\ldc\data\user.authorize"
-Require valid-user
+# AuthName "Attention pauvre fou ! Qui s'aventure en territoire interdit ?"
+# AuthType Basic
+# AuthUserFile "C:\Users\web-2\Documents\DEV\projets\ldc\data\user.authorize"
+# Require valid-user
 
 RewriteEngine On
 RewriteBase /

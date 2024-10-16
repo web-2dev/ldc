@@ -1,70 +1,101 @@
 <?php 
 include "tools/init.inc.php";
 
-$user = substr($_SERVER["REQUEST_URI"], 1);
-
-
-$fileNameList = "$user.json";
-if ( !file_exists("data/$fileNameList") ) $fileNameList = "list.json";
-ob_start();
-    include "data/$fileNameList";
-    $list = ob_get_contents();
-ob_end_clean();
-$list = (array)json_decode($list);
-
-switch ($_SERVER["REQUEST_METHOD"]) {
-    case 'GET':
-        $listName = "Liste $user";
-        displayHTML("tableList", compact("list", "listName"));
-        exit;
-        break;
-    
-    case 'POST':
-        if( isset($_POST["btDel"]) && !empty($_POST["delete"]) ) {
-            unset($_POST["btDel"]);
-            foreach ($_POST["delete"] as $index => $item) {
-                unset($list[$item]);
-            }
-            unset($_POST["delete"]);
-        }
-        foreach ($list as $item => $checked) {
-            // ! dans $_POS, les espaces des clés sont remplacés par des _
-            if( in_array(str_replace(" ", "_", $item), array_keys($_POST)) ) {
-                $list[$item] = true;
-                unset($_POST[$item]);
-            } else {
-                $list[$item] = false;
-            }    
-        }
-
-        if( !empty($_POST["add"]) ) {
-            foreach ($_POST["add"] as $key => $item) {
-                if( in_array($item, array_keys($list)) || !$item) continue;
-                $list[$item] = false;
-            }
-        }
-
-        $file = fopen("data/$fileNameList", "w");
-        fwrite($file, json_encode($list, JSON_UNESCAPED_UNICODE) );
-        fclose($file);
-        header("Location: /$user"); exit;
-        break;
-    
-    default:
-        # code...
-        break;
+$strUsers = getFileContent("data/user.authorize") ;
+$arrUsers = explode("\n", $strUsers);
+$users = [];
+foreach($arrUsers as $user) {
+    $userPassword = explode(":", $user);
+    // ! le caractère "\n" doit être supprimé
+    $users[$userPassword[0]] = lastCharCode($userPassword[1]) == 13 ? substr($userPassword[1], 0, strlen($userPassword[1]) - 1) : $userPassword[1];
 }
 
 
-// $fichier = fopen("liste.json.php", "a");
-// fwrite($fichier, json_encode(["huile", "beurre"]));
-// fclose($fichier);
+if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_USER_AGENT"] &&  $_COOKIE[session_name()] == $_SESSION["session"]) {
+        
+    $user = substr($_SERVER["REQUEST_URI"], 1);
+    // <DEBUG
+    $user == "deco" ? redirect("/deco.php") : null;
+    // DEBUG>
+    $fileNameList = "$user.json";
+    if ( !file_exists("data/$fileNameList") ) $fileNameList = "list.json";
+    ob_start();
+        include "data/$fileNameList";
+        $list = ob_get_contents();
+    ob_end_clean();
+    $list = (array)json_decode($list);
+    
+    switch ($_SERVER["REQUEST_METHOD"]) {
+        case 'GET':
+            $listName = "Liste $user";
+            displayHTML("tableList", compact("list", "listName"));
+            exit;
+            break;
+        
+        case 'POST':
+            if( isset($_POST["btDel"]) && !empty($_POST["delete"]) ) {
+                unset($_POST["btDel"]);
+                foreach ($_POST["delete"] as $index => $item) {
+                    unset($list[$item]);
+                }
+                unset($_POST["delete"]);
+            }
+            foreach ($list as $item => $checked) {
+                // ! dans $_POST, les espaces des clés sont remplacés par des _
+                if( in_array(str_replace(" ", "_", $item), array_keys($_POST)) ) {
+                    $list[$item] = true;
+                    unset($_POST[$item]);
+                } else {
+                    $list[$item] = false;
+                }    
+            }
+    
+            if( !empty($_POST["add"]) ) {
+                foreach ($_POST["add"] as $key => $item) {
+                    if( in_array($item, array_keys($list)) || !$item) continue;
+                    $list[$item] = false;
+                }
+            }
+    
+            $file = fopen("data/$fileNameList", "w");
+            fwrite($file, json_encode($list, JSON_UNESCAPED_UNICODE));
+            fclose($file);
+            redirect($user);
+            break;
+        
+        default:
+            # code...
+            break;
+    }
+    
+} else {  // utilisateur non connecté
+    switch ($_SERVER["REQUEST_METHOD"]) {
+        case "GET":
+            displayHTML("formAuth");
+            break;
+        
+        case "POST":
+            $userName = $_POST["identif"]   ?? null;
+            $password = $_POST["passw"]     ?? null;
 
+            if( $userName && $password ) {
+                if ( !in_array($userName, array_keys($users)) ) {
+                    http_response_code(404);
+                    exit;
+                }
+                if ( !password_verify($password, $users[$userName]) ) {
+                    http_response_code(401);
+                    exit;
+                }
+                $_SESSION["auth"]            = $userName;
+                $_SESSION["HTTP_USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"];
+                $_SESSION["session"]         = $_COOKIE[session_name()];
+                $_SESSION["ip"]              = $_SERVER["SERVER_ADDR"];
+                redirect("/"); 
+            }
+            break;
+    }
 
-// $jdnFile = fopen($fileName, "w+");
-// fwrite($jdnFile, "<?php\n\nreturn [\n");
-// foreach($noms as $prenom => $nom) {
-//     fwrite($jdnFile, "\t\"$prenom\" => \"$nom\",\n");
-// }
-// fwrite($jdnFile, "];");
-// fclose($jdnFile);
+}
+
+?>
