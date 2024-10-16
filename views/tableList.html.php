@@ -30,7 +30,9 @@
         </tbody>
         <tfoot >
             <tr>
-                <td>➕</td>
+                <td>
+                    <button id="btSubmit">➕</button>
+                </td>
                 <td><input type="text" name="add[]" class="form-control" autofocus placeholder="ajouter un élément à la liste..."></td>
                 <th class="bg-secondary">
                     <button name="btDel"><i class="bi bi-trash3"></i>
