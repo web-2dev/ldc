@@ -11,8 +11,9 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
 # # Règles de réécriture d'URL :
-# RewriteRule ^.*$ index.php [L,QSA]
+# RewriteRule ^assets/(.+)$       assets/$1 [L]
 
 # # Si l'URL correspond à /blog/something ou /article/123, autorisez-la
-RewriteRule ^(mona|didier)/?[a-zA-Z0-9\-]*$ index.php [L,QSA]
+RewriteRule ^(mona|didier)$ index.php [L,QSA]
+# RewriteRule ^(mona|didier|deco)/?[a-zA-Z0-9\-]*$ index.php [L,QSA]
 

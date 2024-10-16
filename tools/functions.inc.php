@@ -20,7 +20,7 @@ function vd() {
     echo '<br>';
 
     call_user_func_array('var_dump', func_get_args());
-    echo "</pre>";
+    echo "<br></pre>";
 }
 
 function vde() {
@@ -34,6 +34,7 @@ function pr() {
     echo '<br>';
 
     call_user_func_array('print_r', func_get_args()) ;
+    echo "<br></pre>";
 }
 
 function pre() {

@@ -33,17 +33,22 @@ if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_
             break;
         
         case 'POST':
-            if( isset($_POST["btDel"]) && !empty($_POST["delete"]) ) {
+            if( !empty($_POST["delete"]) ) {
                 unset($_POST["btDel"]);
                 foreach ($_POST["delete"] as $index => $item) {
                     unset($list[$item]);
                 }
                 unset($_POST["delete"]);
             }
+
             foreach ($list as $item => $checked) {
                 // ! dans $_POST, les espaces des clés sont remplacés par des _
                 if( in_array(str_replace(" ", "_", $item), array_keys($_POST)) ) {
-                    $list[$item] = true;
+                    if( isset($_POST["btDel"]) ) {
+                        unset($list[$item]);
+                    } else {
+                        $list[$item] = true;
+                    }
                     unset($_POST[$item]);
                 } else {
                     $list[$item] = false;
