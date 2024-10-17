@@ -8,3 +8,13 @@ for (const cb of cbs) {
     });
 
 }
+
+
+document.querySelectorAll("input[type='text']").forEach( (element, index) => {
+    element.addEventListener("keydown", e => {
+        if(e.key == "Enter"){
+            e.preventDefault();
+            document.querySelector("#btSubmit").click();
+        }
+    })
+})
