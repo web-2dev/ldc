@@ -10,5 +10,5 @@
         <input type="password" class="form-control" name="passw" id="passw">
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">Envoyer</button>
 </form>
