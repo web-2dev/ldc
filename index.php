@@ -110,7 +110,7 @@ if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_
                 $_SESSION["HTTP_USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"];
                 $_SESSION["session"]         = $_COOKIE[session_name()];
                 $_SESSION["ip"]              = $_SERVER["SERVER_ADDR"];
-                redirect("/$user"); 
+                redirect("/$userName"); 
             }
             break;
     }
