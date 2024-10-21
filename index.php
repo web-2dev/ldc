@@ -13,9 +13,14 @@ foreach($arrUsers as $user) {
 
 if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_USER_AGENT"] &&  $_COOKIE[session_name()] == $_SESSION["session"]) {
     $user = substr($_SERVER["REQUEST_URI"], 1) ?: "list"; 
-    if( !in_array($user, array_keys($users)) && $user != "list" ) {
-        http_response_code(404);
+    if( $user != "list" ) {
+        if( !in_array($user, array_keys($users)) ) {
+            erreurHTTP(404); exit;
+        } elseif( $user != $_SESSION["auth"] ) {
+            erreurHTTP(403);
+        }
     }
+
     // <DEBUG
     $user == "deco" ? redirect("/deco.php") : null;
     // DEBUG>
@@ -94,11 +99,11 @@ if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_
 
             if( $userName && $password ) {
                 if ( !in_array($userName, array_keys($users)) ) {
-                    http_response_code(404);
+                    erreurHTTP(404);
                     exit;
                 }
                 if ( !password_verify($password, $users[$userName]) ) {
-                    http_response_code(401);
+                    erreurHTTP(401);
                     exit;
                 }
                 $_SESSION["auth"]            = $userName;

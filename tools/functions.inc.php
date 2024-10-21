@@ -13,6 +13,11 @@ function randomCssColor() {
     return [$bkcoul, $coul];
 }
 
+
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                                 DEGUB                                 ║
+
+
 function vd() {
     $couleurs = randomCssColor();
     echo "<pre style='background-color:$couleurs[0]; color:$couleurs[1];'>";
@@ -41,6 +46,13 @@ function pre() {
     exit (call_user_func_array('pr', func_get_args()));
 }
 
+// ║                                 DEGUB                                 ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+
+
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                                 HTML                                  ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
 
 function displayHTML(string $viewFilename, array $viewParameter = []) {
     extract($viewParameter);
@@ -65,6 +77,10 @@ function imgIcon(string $bsIcon): string {
     return "<img src='assets/icons/$bsIcon.svg' alt='icone $bsIcon'>";
 }
 
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                               FICHIER                                 ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+
 function getFileContent($filePath): string {
     ob_start();
     include $filePath;
@@ -74,9 +90,9 @@ function getFileContent($filePath): string {
 
 }
 
-function redirect($url = "/") {
-    header("Location: $url"); exit;
-}
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                             STRING - CHAR                             ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
 
 function lastChar($str): string {
     // return $str[ strlen($str) - 1 ];
@@ -86,3 +102,16 @@ function lastChar($str): string {
 function lastCharCode($str): int {
     return ord(lastChar($str));
 }
+
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                                 HTTP                                  ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+
+function redirect($url = "/") {
+    header("Location: $url"); exit;
+}
+
+function erreurHTTP($code) : void {
+    http_response_code($code); redirect("/$code.php"); exit;
+}
+
