@@ -12,19 +12,28 @@ foreach($arrUsers as $user) {
 
 
 if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_USER_AGENT"] &&  $_COOKIE[session_name()] == $_SESSION["session"]) {
-        
-    $user = substr($_SERVER["REQUEST_URI"], 1);
+    $user = substr($_SERVER["REQUEST_URI"], 1) ?: "list"; 
+    if( !in_array($user, array_keys($users)) && $user != "list" ) {
+        http_response_code(404);
+    }
     // <DEBUG
     $user == "deco" ? redirect("/deco.php") : null;
     // DEBUG>
-    $fileNameList = "$user.json";
-    if ( !file_exists("data/$fileNameList") ) $fileNameList = "list.json";
-    ob_start();
-        include "data/$fileNameList";
-        $list = ob_get_contents();
-    ob_end_clean();
-    $list = (array)json_decode($list);
     
+
+    $fileNameList = "$user.json";
+    $list = [];
+    if ( file_exists("data/$fileNameList") ) {
+
+        ob_start();
+            include "data/$fileNameList";
+            $list = ob_get_contents();
+        ob_end_clean();
+        $list = (array)json_decode($list);
+    }
+    
+    $user = $user != "list" ? $user : "";
+
     switch ($_SERVER["REQUEST_METHOD"]) {
         case 'GET':
             $listName = "Liste $user";
@@ -102,5 +111,3 @@ if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_
     }
 
 }
-
-?>
