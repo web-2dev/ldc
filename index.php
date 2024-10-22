@@ -117,7 +117,6 @@ if( goûter() ) {
                 $_SESSION["HTTP_USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"];
                 $_SESSION["session"]         = $_COOKIE[session_name()];
                 $_SESSION["ip"]              = $_SERVER["SERVER_ADDR"];
-                vde("username", $userName . $_COOKIE[session_name()], $_COOKIE["ceam_ldc"]);
                 redirect("/"); 
             }
             break;
