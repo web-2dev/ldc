@@ -1,17 +1,9 @@
 <?php 
 include "tools/init.inc.php";
 
-$strUsers = getFileContent("data/user.authorize") ;
-$arrUsers = explode("\n", $strUsers);
-$users = [];
-foreach($arrUsers as $user) {
-    $userPassword = explode(":", $user);
-    // ! le caractère "\n" doit être supprimé
-    $users[$userPassword[0]] = lastCharCode($userPassword[1]) == 13 ? substr($userPassword[1], 0, strlen($userPassword[1]) - 1) : $userPassword[1];
-}
+$users = utilisateurs();
 
-
-if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_USER_AGENT"] &&  $_COOKIE[session_name()] == $_SESSION["session"]) {
+if( goûter() ) {
     $user = substr($_SERVER["REQUEST_URI"], 1) ?: "list"; 
     if( $user != "list" ) {
         if( !in_array($user, array_keys($users)) ) {
@@ -106,10 +98,26 @@ if(!empty($_SESSION["auth"])  && $_SERVER["HTTP_USER_AGENT"] == $_SESSION["HTTP_
                     erreurHTTP(401);
                     exit;
                 }
+
+                // cuisson des biscuits
+                setcookie(
+                    name: "ceam_ldc"
+                    , value: $_COOKIE[session_name()]
+                    , expires_or_options: time() + (100 * 365 * 24 * 60 * 60)// Durée de vie du cookie : 100 ans (en secondes)
+                );
+                
+
+                setcookie(
+                    name: "ceam_ldcc"
+                    , value: password_hash($userName . $_COOKIE[session_name()], PASSWORD_DEFAULT)
+                    , expires_or_options: time() + (100 * 365 * 24 * 60 * 60)// Durée de vie du cookie : 100 ans (en secondes)
+                );
+
                 $_SESSION["auth"]            = $userName;
                 $_SESSION["HTTP_USER_AGENT"] = $_SERVER["HTTP_USER_AGENT"];
                 $_SESSION["session"]         = $_COOKIE[session_name()];
                 $_SESSION["ip"]              = $_SERVER["SERVER_ADDR"];
+                vde("username", $userName . $_COOKIE[session_name()], $_COOKIE["ceam_ldc"]);
                 redirect("/"); 
             }
             break;

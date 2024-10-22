@@ -115,3 +115,58 @@ function erreurHTTP($code) : void {
     http_response_code($code); redirect("/$code.php"); exit;
 }
 
+// ╔═══════════════════════════════════════════════════════════════════════╗
+// ║                                COOKIE                                 ║
+// ╚═══════════════════════════════════════════════════════════════════════╝
+function patisser($user) {
+    setcookie(
+        name: "ceam_ldc"
+        , value: $_COOKIE[session_name()]
+        , expires_or_options: time() + (100 * 365 * 24 * 60 * 60)// Durée de vie du cookie : 100 ans (en secondes)
+    );
+    
+    setcookie(
+        name: "ceam_ldcc"
+        , value: password_hash($user . $_SERVER["HTTP_USER_AGENT"] . $_COOKIE[session_name()], PASSWORD_DEFAULT)
+        , expires_or_options: time() + (100 * 365 * 24 * 60 * 60)// Durée de vie du cookie : 100 ans (en secondes)
+    );
+}
+
+/**
+ * Vérification des cookies (=> goûter)
+ * si l'utilisateur correspond aux valeurs du cookie, retourne l'utilisateur, sinon null
+ * Retourne false s'il n'y a pas de cookie.
+ * 
+ */
+function goûter(): ?string {
+    $session = $_COOKIE["ceam_ldc"]  ?? null;
+    $control = $_COOKIE['ceam_ldcc'] ?? null;
+    if( $session && $control ) {
+        $users = utilisateurs();
+        $control = urldecode($control);
+        $auth = null;
+        foreach ($users as $user => $password) {
+            if( password_verify($user . $session, $control) ) {
+                $auth = $user;
+                break;
+            }
+        }
+        return $auth;
+    }
+    return false;
+}
+
+function utilisateurs(): array {
+    $strUsers = getFileContent("data/user.authorize") ;
+    $arrUsers = explode("\n", $strUsers);
+    $users = [];
+    foreach($arrUsers as $user) {
+        $userPassword = explode(":", $user);
+        // ! le caractère "\n" doit être supprimé
+        $users[$userPassword[0]] = lastCharCode($userPassword[1]) == 13 ? substr($userPassword[1], 0, strlen($userPassword[1]) - 1) : $userPassword[1];
+    }
+    return $users;    
+}
+
+
+
