@@ -1,0 +1,119 @@
+:root {
+    --bs-body-text-align: center;
+}
+.crossout {
+    text-decoration: line-through;
+}
+
+
+/* ********************************************************************************************/
+/* CHECKBOX */
+/* Masquer la checkbox réelle */
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+/* Créer une fausse case à cocher */
+.custom-checkbox .checkmark {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: #ccc;
+    border-radius: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+/* Lorsque la checkbox est cochée, styliser la fausse case à cocher */
+.custom-checkbox input:checked + .checkmark {
+    background-color: var(--bs-danger);
+}
+
+.custom-checkbox .checkmark.cross::after {
+    content: "❌";
+    /* position: absolute; */
+    display: none;
+    font-size: 13px;
+}
+/* .custom-checkbox .checkmark.cross { background-color: transparent; } */
+
+.custom-checkbox input:checked + .checkmark.cross { background-color: #ccc;  }
+
+.custom-checkbox .checkmark:not(.cross)::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Afficher la coche lorsque la checkbox est cochée */
+.custom-checkbox input:checked + .checkmark::after {
+    display: block;
+}
+/* CHECKBOX */
+/* ********************************************************************************************/
+
+
+/* ********************************************************************************************/
+/* TABLE */
+
+thead, tfoot { background-color: ccc; color: white; }
+td:nth-child(2){
+    text-align: left;
+}
+
+th, td { vertical-align: middle; }
+
+tfoot tr td, tfoot tr th {
+    border-top: 2px solid var(--bs-secondary) !important;
+}
+
+#list {
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+/* TABLE */
+/* ********************************************************************************************/
+
+html {
+    height: 100vh;
+    background-color: #3A78E0;
+}
+
+body {
+    background-color: transparent;
+}
+
+
+/* ********************************************************************************************/
+/* MESSAGES */
+#layout-messages {
+    position: absolute;
+    background-color: #0007;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#messages {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    top: 50%;    
+}
+/* MESSAGES */
+/* ********************************************************************************************/
