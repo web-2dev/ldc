@@ -46,6 +46,8 @@ function updateArrayDataFile($fileName, $arrayData) {
     foreach($arrayData as $index => $array) {
         $text .= "\t[\n";
         foreach($array as $key => $value) {
+            $key = str_replace("$", "\$", $key);
+            $value = str_replace("$", "\$", $value);
             $text .= "\t\t\"$key\" => \"$value\",\n";
         }
         $text .= "\n\t],\n";
