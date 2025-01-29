@@ -4,7 +4,7 @@
     if( getServer("REQUEST_METHOD") == "POST" ) {
 
         // liste précédente
-        $list = getFileValue("../data/list.php", []);
+        $list = getDataFileValue("../data/list.php", []);
         foreach ($list as $item => $checked) {
             // ! dans $_POST, les espaces des clés sont remplacés par des _
             /**

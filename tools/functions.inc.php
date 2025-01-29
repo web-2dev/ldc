@@ -1,4 +1,22 @@
 <?php 
+function getUserLogs($user) {
+    $user = getUsername($user) ?? $user;
+    $logs = getDataFileValue(__DIR__ . "/../data/log.php");
+    $userlogs = array_filter($logs, function($log) use ($user){
+        return $log["ident"] == $user;
+    });
+    return $userlogs;
+}
+
+function getUserLogConnectionDate($user) {
+    $userLogs = getUserLogs($user);
+    return array_column($userLogs, "date");
+}
+
+function getUserLastConnectionDate($user) {
+    $dates = getUserLogConnectionDate($user);
+    return $dates[ count($dates) - 1 ];
+}
 
 
 
@@ -46,9 +64,9 @@ function updateArrayDataFile($fileName, $arrayData) {
     foreach($arrayData as $index => $array) {
         $text .= "\t[\n";
         foreach($array as $key => $value) {
-            $key = str_replace("$", "\$", $key);
-            $value = str_replace("$", "\$", $value);
-            $text .= "\t\t\"$key\" => \"$value\",\n";
+            // $key = str_replace("$", "\$", $key); vde($key);
+            // $value = str_replace("$", "\$", $value);
+            $text .= "\t\t'$key' => '$value',\n";
         }
         $text .= "\n\t],\n";
     }
@@ -75,7 +93,7 @@ function updateDataFile($fileName, $array) {
 /**
  * à utiliser pour les datefile PHP contenant un "return"
  */
-function getFileValue($filePath, $default = null) : mixed {
+function getDataFileValue($filePath, $default = null) : mixed {
     set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
     });
@@ -83,7 +101,7 @@ function getFileValue($filePath, $default = null) : mixed {
     try {
         $data = include $filePath;
     } catch (ErrorException $e) {
-        // echo "Exception capturée : " . $e->getMessage();
+        echo "Exception capturée : " . $e->getMessage();
         return $default;
     }
     
@@ -99,6 +117,17 @@ function getFileContent($filePath): string {
     $text = ob_get_contents();
     ob_end_clean();
     return $text;
+}
+
+function getArrayJsonFileValue($filePath) : mixed {
+    $return = null;
+    if ( !file_exists($filePath) ) {
+        ob_start();
+            include $fileNameList;
+            $return = ob_get_contents();
+        ob_end_clean();
+        $return = (array)json_decode($return);
+    }
 }
 
 
@@ -118,6 +147,7 @@ function randomCssColor() {
     return [$bkcoul, $coul];
 }
 
+
 // ╔═══════════════════════════════════════════════════════════════════════╗
 // ║                                 HTTP                                  ║
 // ╚═══════════════════════════════════════════════════════════════════════╝
@@ -127,10 +157,10 @@ function httpRedirect($url) {
     exit;
 }
 
-
 function redirect($url = "/") {
     header("Location: $url"); exit;
 }
+
 
 // ╔═══════════════════════════════════════════════════════════════════════╗
 // ║                                 DEBUG                                 ║
@@ -192,15 +222,20 @@ function checkString($word): bool {
     return strlen($check) == strlen($word);
 }
 
+
 // ╔═══════════════════════════════════════════════════════════════════════╗
 // ║                            SUPPER GLOBALES                            ║
 // ╚═══════════════════════════════════════════════════════════════════════╝
 
+function getGlobal($super, $key, $default = null) {
+    return $super[$key] ?? null;
+}
+
 function getSession(string $key): mixed {
-    return $_SESSION[$key] ?? null;
+    return getGlobal($_SESSION, $key);
 }
 function getServer(string $key): mixed {
-    return $_SERVER[$key] ?? null;
+    return getGlobal($_SERVER, $key);
 }
 
 function setSession(string $key, mixed $value) {
@@ -242,6 +277,11 @@ function setMessage($key, $message) {
     $_SESSION["messages"][$key][] = $message;
 }
 
+function getCookie($cookie) {
+    return getGlobal($_COOKIE, $cookie);
+}
+
+
 // ╔═══════════════════════════════════════════════════════════════════════╗
 // ║                               VARIABLES                               ║
 // ╚═══════════════════════════════════════════════════════════════════════╝
@@ -264,7 +304,7 @@ function exists(mixed $var): bool {
  * @return string|null null si l'identifiant n'est pas trouvé
  */
 function getUsername(string $ident): ?string {
-    $authorizedUsers = getFileValue("data/auth.php");
+    $authorizedUsers = getDataFileValue(__DIR__ . "/../data/auth.php");
     $usernames = array_keys($authorizedUsers);
     foreach ($usernames as $encodedUsername) {
         if( password_verify($ident, $encodedUsername) ) {
