@@ -2,16 +2,30 @@
 include "tools/init.inc.php";
 /********** Récupération des utilisateurs  **********/
 $authorized = include "data/auth.php";
-$usernames = array_keys($authorized);
+$authorizedUsernames = array_keys($authorized);
 
 switch ( getServer("REQUEST_METHOD") ) {
     case 'GET':
+        $allowed = false;
         if( $cookie = getCookie("ldcaut") ) {
-            $list = getDataFileValue("data/list.php", []);
-            displayHTML("tableList", compact("list"));
-        } else {
-            displayHTML("formAuth");
+            foreach ($authorizedUsernames as $username) {
+                if( password_verify($username . getUserLastConnectionDate($username), $cookie) ) {
+                    $allowed = true;
+                    break;
+                }
+            }
+            if( $allowed ) {
+                $list = getDataFileValue("data/list.php", []);
+                // setMessage("success", "Bon retour !");
+                displayHTML("tableList", compact("list"));
+                exit;
+            } else {
+                setMessage("error", "C'est bizarre ! Vous n'êtes pas qui vous prétendez être !!!");
+                setcookie("ldcaut", null, 1);
+            }
         }
+        displayHTML("formAuth");
+        exit;
         break;
     
     case "POST":
@@ -32,7 +46,7 @@ switch ( getServer("REQUEST_METHOD") ) {
                     ];
 
                     $cookieValue = password_hash($encodedUsername . $now, PASSWORD_DEFAULT);
-                    setcookie("ldcaut", $cookieValue, expires_or_options: time() + 100 * 365 * 24 * 60 * 60 );
+                    setcookie("ldcaut", $cookieValue, time() + 60 * 60 * 24 * 365 * 2 );
                     $histo = getDataFileValue("data/log.php");
                     $histo[] = $conn;
                     updateArrayDataFile("data/log.php", $histo);
@@ -43,12 +57,12 @@ switch ( getServer("REQUEST_METHOD") ) {
                     setMessage("erreur", "Connexion refusée");
                 }
             } else {
-                setMessage("danger", "Accès refusé ! Passez votre chemin <br><img src='https://image.tmdb.org/t/p/original/zozlSbPA887drZysEaSRAgO5aUB.jpg'>");
+                setMessage("danger", "Accès refusé ! Passez votre chemin");
             }
         } else {
             setMessage("erreur", "Y'a 2 champs ?! Ai-je vraiment besoin de préciser que les 2 sont obligatoires ?");
         }
         httpRedirect("/");
+        exit;
         break;
 }
-

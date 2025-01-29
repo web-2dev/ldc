@@ -15,7 +15,7 @@ function getUserLogConnectionDate($user) {
 
 function getUserLastConnectionDate($user) {
     $dates = getUserLogConnectionDate($user);
-    return $dates[ count($dates) - 1 ];
+    return $dates ? $dates[ count($dates) - 1 ] : null;
 }
 
 
@@ -252,6 +252,7 @@ function setMessage($key, $message) {
     switch ($key) {
         case "danger": case "error": case "erreur": case "fail": case "échec": case "red": case "rouge":
             $key = "danger";
+            $message .= "<br><img src='/assets/images/getout.jpg'>";
             break;
             
         case "success": case "succes": case "succès": case "réussite": case "green": case "vert":
