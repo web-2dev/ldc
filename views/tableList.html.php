@@ -31,11 +31,11 @@
         <tfoot >
             <tr>
                 <td class="bg-secondary">
-                    <button name="btDel"> <i class="bi-eraser-fill"></i> </button>
+                    <button type="button" name="btDel" class="form-control" id="btDel"> <i class="bi-eraser-fill"></i> </button>
                 </td>
                 <td><input type="text" name="add" class="form-control" autofocus placeholder="ajouter un élément à la liste..."></td>
                 <th>
-                    <button id="btSubmit">➕</button>
+                    <button type="submit" id="btAdd" class="btn form-control btn-secondary" ><i class="bi-clipboard-plus"></i></button>
                 </th>
             </tr>
         </tfoot>

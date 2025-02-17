@@ -2,10 +2,16 @@
     include "../tools/init.inc.php";
     
     if( getServer("REQUEST_METHOD") == "POST" ) {
-
         // liste précédente
         $list = getDataFileValue("../data/list.php", []);
         foreach ($list as $item => $checked) {
+
+            // enlever les espaces de $_POST['add']
+            if( isset($_POST["add"]) ) $_POST["add"] = trim($_POST["add"]);
+            // $_POST = array_map(function ($val) {
+            //     return trim($val);
+            // }, $_POST);
+
             // ! dans $_POST, les espaces des clés sont remplacés par des _
             /**
              * Dans la liste, toutes les lignes ont une case à cocher pour sélectionner les éléments à supprimer.
@@ -31,5 +37,6 @@
     } else {
         setMessage("danger", "405 : Méthode proscrite !");
     }
+    setSession("nolog", true);
     redirect("/");
 

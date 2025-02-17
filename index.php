@@ -2,21 +2,26 @@
 include "tools/init.inc.php";
 /********** Récupération des utilisateurs  **********/
 $authorized = include "data/auth.php";
-$authorizedUsernames = array_keys($authorized);
+
+$authorizedEncodedUsernames = array_keys($authorized);
 
 switch ( getServer("REQUEST_METHOD") ) {
     case 'GET':
         $allowed = false;
         if( $cookie = getCookie("ldcaut") ) {
-            foreach ($authorizedUsernames as $username) {
-                if( password_verify($username . getUserLastConnectionDate($username), $cookie) ) {
-                    $allowed = true;
+            foreach ($authorizedEncodedUsernames as $encodedUsername) {
+                if( password_verify($encodedUsername . getUserLastConnectionDate($encodedUsername), $cookie) ) {
+                    $allowed = $encodedUsername;
                     break;
                 }
             }
+
             if( $allowed ) {
+                recordLogConnection($allowed);
+            // }
+
+            // if( $connected ) {
                 $list = getDataFileValue("data/list.php", []);
-                // setMessage("success", "Bon retour !");
                 displayHTML("tableList", compact("list"));
                 exit;
             } else {
@@ -34,22 +39,23 @@ switch ( getServer("REQUEST_METHOD") ) {
             
             if( $encodedUsername = getUsername($ident) ) {
                 if( password_verify($passw, $authorized[$encodedUsername]) ) {
-                    $now = date_format(new DateTime(), "Y-m-d H:i:s");
-                    $conn = [
-                        "date" => $now,
-                        "ident" => $encodedUsername,
-                        "HTTP_USER_AGENT" => getServer("HTTP_USER_AGENT"),
-                        "HTTP_ACCEPT" => getServer("HTTP_ACCEPT"),
-                        "HTTP_ACCEPT_LANGUAGE" => getServer("HTTP_ACCEPT_LANGUAGE"),
-                        "HTTP_ACCEPT_ENCODING" => getServer("HTTP_ACCEPT_ENCODING"),
-                        "REMOTE_ADDR" => getServer("REMOTE_ADDR"),
-                    ];
+                    recordLogConnection($encodedUsername);
+                    // $now = date_format(new DateTime(), "Y-m-d H:i:s");
+                    // $conn = [
+                    //     "date" => $now,
+                    //     "ident" => $encodedUsername,
+                    //     "HTTP_USER_AGENT" => getServer("HTTP_USER_AGENT"),
+                    //     "HTTP_ACCEPT" => getServer("HTTP_ACCEPT"),
+                    //     "HTTP_ACCEPT_LANGUAGE" => getServer("HTTP_ACCEPT_LANGUAGE"),
+                    //     "HTTP_ACCEPT_ENCODING" => getServer("HTTP_ACCEPT_ENCODING"),
+                    //     "REMOTE_ADDR" => getServer("REMOTE_ADDR"),
+                    // ];
 
-                    $cookieValue = password_hash($encodedUsername . $now, PASSWORD_DEFAULT);
-                    setcookie("ldcaut", $cookieValue, time() + 60 * 60 * 24 * 365 * 2 );
-                    $histo = getDataFileValue("data/log.php");
-                    $histo[] = $conn;
-                    updateArrayDataFile("data/log.php", $histo);
+                    // $cookieValue = password_hash($encodedUsername . $now, PASSWORD_DEFAULT);
+                    // setcookie("ldcaut", $cookieValue, time() + 60 * 60 * 24 * 365 * 2 );
+                    // $histo = getDataFileValue("data/log.php");
+                    // $histo[] = $conn;
+                    // updateArrayDataFile("data/log.php", $histo);
 
                     setMessage("success", "connexion acceptée");
                 }
