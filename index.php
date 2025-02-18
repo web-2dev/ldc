@@ -17,7 +17,11 @@ switch ( getServer("REQUEST_METHOD") ) {
             }
 
             if( $allowed ) {
-                recordLogConnection($allowed);
+                if( !getSession("nolog") ) {
+                    recordLogConnection($allowed);
+                } else {
+                    removeSession("nolog");
+                }
             // }
 
             // if( $connected ) {

@@ -313,6 +313,7 @@
             "HTTP_ACCEPT_LANGUAGE" => getServer("HTTP_ACCEPT_LANGUAGE"),
             "HTTP_ACCEPT_ENCODING" => getServer("HTTP_ACCEPT_ENCODING"),
             "REMOTE_ADDR" => getServer("REMOTE_ADDR"),
+            "HTTP_REFERER" => getServer("HTTP_REFERER"),
         ];
         
         $cookieValue = password_hash($encodedUsername . $now, PASSWORD_DEFAULT);

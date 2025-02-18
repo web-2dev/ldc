@@ -3,8 +3,7 @@
         <thead class="table-dark">
             <tr>
                 <th class="col-1"><i class="bi-pencil"></i></th>
-                <th colspan="2"><?= $listName ?? "Liste" ?></th>
-                <!--<th class="col-1"> <i class="bi-eraser-fill"></i></th> -->
+                <th colspan="2"><i class="bi-list"></i> <?= $listName ?? "Liste" ?></th>
             </tr>
         </thead>
         <tbody>
@@ -17,14 +16,10 @@
                     </label>
                 </td>
 
-                <td colspan="2" <?= $checked ? "class='crossout'" : "" ?>><?= $item ?></td>
-                
-                <!-- <td class="white">
-                    <label class="custom-checkbox">
-                        <input type="checkbox" name="delete[]" id="" value="<?= $item ?>">
-                        <span class="checkmark cross"></span>
-                    </label>
-                </td> -->
+                <td colspan="2" class="td-edit <?= $checked ? "crossout" : "" ?>">
+                    <span class="delius-regular "><?= $item ?></span>
+                    <input class="hide edit" name="modif[]" value="<?= $item ?>" id="input<?= $item ?>" >
+                </td>                
             </tr>
             <?php endforeach ?>
         </tbody>

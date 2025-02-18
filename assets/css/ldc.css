@@ -1,8 +1,17 @@
+.delius-regular {
+    font-family: "Delius Swash Caps", serif;
+    /* font-weight: 400; */
+    font-style: normal;
+  }
+  
+
 :root {
     --bs-body-text-align: center;
 }
 .crossout {
     text-decoration: line-through;
+    font-weight: bolder;
+    text-shadow: 0px 0px 10px red;
 }
 
 
@@ -125,3 +134,15 @@ img { width: 50%; }
 /* ********************************************************************************************/
 
 
+/* INPUT */
+.hide { display: none !important; }
+td.td-edit { position: relative; }
+input.edit {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    border-style: none;
+    display: block;
+}
