@@ -11,7 +11,6 @@
         // enregistrement des modifications des articles
         $i = 0;
         foreach ($list as $key => $value) {
-            echo "<ul><li>$key => $value</li></ul>";
             unset( $list[$key] );
             $list[ $toEdit[$i++] ] = $value;
         }
