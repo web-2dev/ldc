@@ -69,6 +69,21 @@
         fclose($jdnFile);
     }
 
+    function updateDataPassFile($fileName, $array) {
+        $jdnFile = fopen($fileName, "w+");
+        fwrite($jdnFile, "<?php\n\nreturn [\n");
+        foreach($array as $key => $value) {
+            if( is_int($key) ) 
+                fwrite($jdnFile, "\t'$value',\n");
+            else {
+                $key = addslashes($key);
+                fwrite($jdnFile, "\t'$key' => '$value',\n");
+            }
+        }
+        fwrite($jdnFile, "];");
+        fclose($jdnFile);
+    }
+
 
     /**
      * à utiliser pour les datefile PHP contenant un "return"
@@ -265,10 +280,6 @@
         return getGlobal($_SERVER, $key);
     }
 
-    // COOKIES
-    function getCookie($cookie) {
-        return getGlobal($_COOKIE, $cookie);
-    }
 
 
 // ╔═══════════════════════════════════════════════════════════════════════╗
@@ -341,4 +352,6 @@
         $dates = getUserLogConnectionDate($user);
         return $dates ? $dates[ count($dates) - 1 ] : null;
     }
+    
+
     
